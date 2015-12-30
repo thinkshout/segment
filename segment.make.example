@@ -1,9 +1,0 @@
-api = 2
-core = 7.x
-projects[libraries] = 2
-
-; segment PHP library
-libraries[segment][download][type] = "get"
-libraries[segment][download][url] = "https://github.com/segmentio/analytics-php/archive/1.2.1.tar.gz"
-libraries[segment][directory_name] = "segment"
-libraries[segment][destination] = "libraries"
