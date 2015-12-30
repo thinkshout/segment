@@ -160,3 +160,23 @@ function segment_php_log_error($code, $msg) {
   // @TODO set severity based on code, if the codes are useful.
   watchdog('segment', 'Code: @code. @msg', array('@code' => $code, '@msg' => $msg), WATCHDOG_ERROR);
 }
+
+/**
+ * Helper method to add EITHER the logged in user's id OR the anonymousId from
+ * the cookie created by analytics.js
+ *
+ * @param $msg
+ */
+function segment_php_add_userid(&$msg) {
+  global $user;
+  if ($user->uid > 0) {
+    $msg['userId'] = $user->uid;
+  }
+  else {
+    $anonymous_id = drupal_json_decode(filter_input(INPUT_COOKIE, 'ajs_anonymous_id'));
+    if (empty($anonymous_id)) {
+      $anonymous_id = drupal_random_key();
+    }
+    $msg['anonymousId'] = $anonymous_id;
+  }
+}
