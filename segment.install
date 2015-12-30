@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Segment module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function segment_install() {
+  // Universal web tracking opt-out & Compliance with Do Not Track.
+  variable_set('segment_privacy', 1);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function segment_uninstall() {
+  variable_del('segment_write_key');
+  variable_del('segment_privacy');
+  variable_del('segment_debug');
+}
+
+function segment_requirements($phase) {
+  $requirements = array();
+
+  if ($phase == 'runtime') {
+    $t = get_t();
+
+    $libraries = libraries_get_libraries();
+
+    if (
+      array_key_exists('segment', $libraries) &&
+      file_exists($libraries['segment'] . '/lib/Segment.php')
+    ) {
+      $requirements['segment_libraries'] = array(
+        'title' => $t('Segment PHP client'),
+        'severity' => REQUIREMENT_OK,
+        'value' => $t('PHP client for Segment is installed.'),
+      );
+    }
+    else {
+      $requirements['segment_libraries'] = array(
+        'title' => $t('Segment PHP client'),
+        'value' => $t('PHP client for Segment is not installed'),
+        'severity' => REQUIREMENT_WARNING,
+        'description' => $t('PHP client for Segment will not work without installing required library'),
+      );
+    }
+  }
+
+  return $requirements;
+}

@@ -1,0 +1,7 @@
+name = Segment
+description = Integration with segment.com service
+package = Statistics
+core = 7.x
+configure = admin/config/system/segment
+
+dependencies[] = libraries
