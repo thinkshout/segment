@@ -123,7 +123,19 @@ function segment_libraries_info() {
 function segment_library_post_load() {
   $options = array(
     'debug' => variable_get('segment_debug', FALSE),
+    'error_handler' => function ($code, $msg) { segment_log_error($code, $msg); }
   );
 
   Segment::init(variable_get('segment_write_key', ''), $options);
+}
+
+/**
+ * Error message handler to pass errors to watchdog.
+ *
+ * @param $code
+ * @param $msg
+ */
+function segment_log_error($code, $msg) {
+  // @TODO set severity based on code, if the codes are useful.
+  watchdog('segment', 'Code: @code. @msg', array('@code' => $code, '@msg' => $msg), WATCHDOG_ERROR);
 }
