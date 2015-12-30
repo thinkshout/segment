@@ -88,6 +88,25 @@ function segment_admin_settings_form($form_state) {
 }
 
 /**
+ * Simple wrapper to send requests to Segment using the PHP library.
+ *
+ * @param string $method
+ *  Method from
+ * @param null|array $message
+ *  Array of data to pass to the method.
+ */
+function segment_php_send($method, $message = NULL) {
+
+  $library = libraries_load('segment');
+  if (!$library['loaded']) {
+    watchdog('segment', 'Error loading library', WATCHDOG_ERROR);
+    return;
+  }
+
+  Segment::$method($message);
+}
+
+/**
  * Implements hook_libraries_info().
  */
 function segment_libraries_info() {
@@ -123,8 +142,10 @@ function segment_libraries_info() {
 function segment_library_post_load() {
   $options = array(
     'debug' => variable_get('segment_debug', FALSE),
-    'error_handler' => function ($code, $msg) { segment_log_error($code, $msg); }
+    'error_handler' => function ($code, $msg) { segment_php_log_error($code, $msg); }
   );
+
+  // @TODO allow for other init options.
 
   Segment::init(variable_get('segment_write_key', ''), $options);
 }
@@ -135,7 +156,7 @@ function segment_library_post_load() {
  * @param $code
  * @param $msg
  */
-function segment_log_error($code, $msg) {
+function segment_php_log_error($code, $msg) {
   // @TODO set severity based on code, if the codes are useful.
   watchdog('segment', 'Code: @code. @msg', array('@code' => $code, '@msg' => $msg), WATCHDOG_ERROR);
 }
