@@ -53,6 +53,10 @@ function segment_page_alter(&$page) {
     $script .= '}}();';
 
     drupal_add_js($script, array('scope' => 'header', 'type' => 'inline'));
+
+    // The user id is really handy for various segment calls so we store it in
+    // the settings.
+    drupal_add_js(array('segment' => array('uid' => $GLOBALS['user']->uid)), 'setting');
   }
 }
 
@@ -168,9 +172,8 @@ function segment_php_log_error($code, $msg) {
  * @param $msg
  */
 function segment_php_add_userid(&$msg) {
-  global $user;
-  if ($user->uid > 0) {
-    $msg['userId'] = $user->uid;
+  if (user_is_logged_in()) {
+    $msg['userId'] = $GLOBALS['user']->uid;
   }
   else {
     $anonymous_id = drupal_json_decode(filter_input(INPUT_COOKIE, 'ajs_anonymous_id'));
