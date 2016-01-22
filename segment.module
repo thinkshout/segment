@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Segment Integration
+ * Segment Integration.
  */
 
 /**
@@ -45,7 +45,8 @@ function segment_page_alter(&$page) {
 
   $write_key = variable_get('segment_write_key', '');
   if (!empty($write_key)) {
-    // Minified code from https://segment.com/docs/libraries/analytics.js/quickstart/#step-1-copy-the-snippet
+    // Minified code from:
+    // https://segment.com/docs/libraries/analytics.js/quickstart/#step-1-copy-the-snippet
     $script = '!function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t){var e=document.createElement("script");e.type="text/javascript";e.async=!0;e.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(e,n)};analytics.SNIPPET_VERSION="3.1.0";';
     // Include configured write key.
     $script .= 'analytics.load(' . drupal_json_encode($write_key) . ');';
@@ -95,9 +96,9 @@ function segment_admin_settings_form($form_state) {
  * Simple wrapper to send requests to Segment using the PHP library.
  *
  * @param string $method
- *  Method from
+ *    Method from.
  * @param null|array $message
- *  Array of data to pass to the method.
+ *    Array of data to pass to the method.
  */
 function segment_php_send($method, $message = NULL) {
 
@@ -121,7 +122,7 @@ function segment_libraries_info() {
     'path' => 'lib',
     'version arguments' => array(
       'file' => 'VERSION',
-      // 1.2.1
+      // Example pattern: '1.2.1'.
       'pattern' => '/((\d+)\.(\d+)\.(\d+))/',
     ),
     'files' => array(
@@ -146,19 +147,22 @@ function segment_libraries_info() {
 function segment_library_post_load() {
   $options = array(
     'debug' => variable_get('segment_debug', FALSE),
-    'error_handler' => function ($code, $msg) { segment_php_log_error($code, $msg); }
+    'error_handler' => function ($code, $msg) {
+      segment_php_log_error($code, $msg);
+    },
   );
 
   // @TODO allow for other init options.
-
   Segment::init(variable_get('segment_write_key', ''), $options);
 }
 
 /**
  * Error message handler to pass errors to watchdog.
  *
- * @param $code
- * @param $msg
+ * @param string $code
+ *   Error code.
+ * @param string $msg
+ *   Error Message.
  */
 function segment_php_log_error($code, $msg) {
   // @TODO set severity based on code, if the codes are useful.
@@ -166,10 +170,13 @@ function segment_php_log_error($code, $msg) {
 }
 
 /**
- * Helper method to add EITHER the logged in user's id OR the anonymousId from
- * the cookie created by analytics.js
+ * Helper method to add ID.
  *
- * @param $msg
+ * This adds EITHER the logged in user's id OR the anonymousId from the cookie
+ * created by analytics.js.
+ *
+ * @param string $msg
+ *   Message.
  */
 function segment_php_add_userid(&$msg) {
   if (user_is_logged_in()) {
