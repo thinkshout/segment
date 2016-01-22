@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the Segment module.
+ * Install, update, and uninstall functions for the Segment module.
  */
 
 /**
@@ -22,6 +22,15 @@ function segment_uninstall() {
   variable_del('segment_debug');
 }
 
+/**
+ * Check the library requirements.
+ *
+ * @param string $phase
+ *   The runtime phase.
+ *
+ * @return array
+ *   The requirements.
+ */
 function segment_requirements($phase) {
   $requirements = array();
 
